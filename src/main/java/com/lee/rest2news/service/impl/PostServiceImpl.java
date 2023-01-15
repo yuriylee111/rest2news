@@ -1,9 +1,11 @@
 package com.lee.rest2news.service.impl;
 
+import com.lee.rest2news.entity.Category;
 import com.lee.rest2news.entity.Post;
 import com.lee.rest2news.exception.ResourceNotFoundException;
 import com.lee.rest2news.payload.PostDto;
 import com.lee.rest2news.payload.PostResponse;
+import com.lee.rest2news.repository.CategoryRepository;
 import com.lee.rest2news.repository.PostRepository;
 import com.lee.rest2news.service.PostService;
 import org.modelmapper.ModelMapper;
@@ -16,19 +18,21 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.lee.rest2news.util.AppConstant.ID;
-import static com.lee.rest2news.util.AppConstant.POST;
+import static com.lee.rest2news.util.AppConstant.*;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-
     private final ModelMapper mapper;
+    private final CategoryRepository categoryRepository;
 
-    public PostServiceImpl(PostRepository postRepository, ModelMapper mapper) {
+    public PostServiceImpl(PostRepository postRepository,
+                           ModelMapper mapper,
+                           CategoryRepository categoryRepository) {
         this.postRepository = postRepository;
         this.mapper = mapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -36,7 +40,7 @@ public class PostServiceImpl implements PostService {
         Post post = mapToEntity(postDto);
         Post newPost = postRepository.save(post);
 
-        PostDto postResponse = mapToDTO(newPost);
+        PostDto postResponse = mapToDto(newPost);
         return postResponse;
     }
 
@@ -48,7 +52,7 @@ public class PostServiceImpl implements PostService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
         Page<Post> posts = postRepository.findAll(pageable);
         List<Post> listOfPosts = posts.getContent();
-        List<PostDto> content = listOfPosts.stream().map(post -> mapToDTO(post)).collect(Collectors.toList());
+        List<PostDto> content = listOfPosts.stream().map(post -> mapToDto(post)).collect(Collectors.toList());
 
         PostResponse postResponse = new PostResponse();
         postResponse.setContent(content);
@@ -64,7 +68,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto getPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
-        return mapToDTO(post);
+        return mapToDto(post);
     }
 
     @Override
@@ -75,7 +79,7 @@ public class PostServiceImpl implements PostService {
         post.setContent(postDto.getContent());
 
         Post updatedPost = postRepository.save(post);
-        return mapToDTO(updatedPost);
+        return mapToDto(updatedPost);
     }
 
     @Override
@@ -84,7 +88,18 @@ public class PostServiceImpl implements PostService {
         postRepository.delete(post);
     }
 
-    private PostDto mapToDTO(Post post) {
+    @Override
+    public List<PostDto> getPostsByCategory(Long categoryId) {
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException(CATEGORY, ID, categoryId));
+
+        List<Post> posts = postRepository.findByCategoryId(categoryId);
+
+        return posts.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    private PostDto mapToDto(Post post) {
         PostDto postDto = mapper.map(post, PostDto.class);
         return postDto;
     }

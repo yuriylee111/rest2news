@@ -48,3 +48,17 @@ GET http://localhost:8080/api/v1/categories
 GET http://localhost:8080/api/v1/categories/1
 PUT http://localhost:8080/api/v1/categories/1
 DELETE http://localhost:8080/api/v1/categories/1
+
+--POST AND CATEGORY--
+
+POST http://localhost:8080/api/posts
+
+{
+    "title": "Plus unique title",
+    "description": "Plus description",
+    "content": "Plus content",
+    "categoryId":1
+}
+
+PUT http://localhost:8080/api/posts/1
+GET http://localhost:8080/api/posts/category/1

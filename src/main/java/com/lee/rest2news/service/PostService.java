@@ -3,6 +3,8 @@ package com.lee.rest2news.service;
 import com.lee.rest2news.payload.PostDto;
 import com.lee.rest2news.payload.PostResponse;
 
+import java.util.List;
+
 public interface PostService {
     PostDto createPost(PostDto postDto);
 
@@ -13,4 +15,6 @@ public interface PostService {
     PostDto updatePost(PostDto postDto, Long id);
 
     void deletePostById(Long id);
+
+    List<PostDto> getPostsByCategory(Long categoryId);
 }
