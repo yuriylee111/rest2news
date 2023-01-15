@@ -15,15 +15,11 @@ import java.util.Set;
 @NoArgsConstructor
 
 @Entity
-@Table(
-        name = "post", uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})}
-)
+@Table(name = "post", uniqueConstraints = {@UniqueConstraint(columnNames = {"title"})})
 public class Post {
 
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.IDENTITY
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -38,4 +34,7 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 }
