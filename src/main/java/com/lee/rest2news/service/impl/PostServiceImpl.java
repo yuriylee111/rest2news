@@ -46,7 +46,8 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponse getAllPosts(int pageNo, int pageSize, String sortBy, String sortDir) {
-        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending()
+        Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
@@ -67,13 +68,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getPostById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
+        Post post = getPostEntityById(id);
         return mapToDto(post);
     }
 
     @Override
     public PostDto updatePost(PostDto postDto, Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
+        Post post = getPostEntityById(id);
         post.setTitle(postDto.getTitle());
         post.setDescription(postDto.getDescription());
         post.setContent(postDto.getContent());
@@ -84,7 +85,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePostById(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
+        Post post = getPostEntityById(id);
         postRepository.delete(post);
     }
 
@@ -97,6 +98,10 @@ public class PostServiceImpl implements PostService {
         List<Post> posts = postRepository.findByCategoryId(categoryId);
 
         return posts.stream().map(this::mapToDto).collect(Collectors.toList());
+    }
+
+    private Post getPostEntityById(Long id) {
+        return postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(POST, ID, id));
     }
 
     private PostDto mapToDto(Post post) {
