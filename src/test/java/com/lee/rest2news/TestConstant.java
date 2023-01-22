@@ -14,6 +14,11 @@ public class TestConstant {
     public static final String TEST_CONTENT = "test content";
     public static final String TEST_CONTENT_UPDATED = "test content updated";
 
+    public static final String TEST_USER_NAME = "test user name";
+    public static final String TEST_EMAIL = "test email";
+    public static final String TEST_TEXT_BODY = "test text body";
+    public static final String TEST_CATEGORY_NAME = "test category name";
+
     public static final int TEST_PAGE_NUMBER = 0;
     public static final int TEST_PAGE_SIZE = 5;
     public static final String TEST_SORT_BY = "id";
