@@ -5,7 +5,6 @@ import com.lee.rest2news.payload.PostDtoV2;
 import com.lee.rest2news.payload.PostResponse;
 import com.lee.rest2news.service.PostService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,8 +24,9 @@ public class PostController {
     }
 
     @PostMapping("/v1/posts")
-    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
-        return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostDto createPost(@Valid @RequestBody PostDto postDto) {
+        return postService.createPost(postDto);
     }
 
     @GetMapping("/v1/posts")
@@ -40,12 +40,12 @@ public class PostController {
     }
 
     @GetMapping("/v1/posts/{id}")
-    public ResponseEntity<PostDto> getPostByIdV1(@PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(postService.getPostById(id));
+    public PostDto getPostByIdV1(@PathVariable(value = "id") Long id) {
+        return postService.getPostById(id);
     }
 
     @GetMapping("/v2/posts/{id}")
-    public ResponseEntity<PostDtoV2> getPostByIdV2(@PathVariable(value = "id") Long id) {
+    public PostDtoV2 getPostByIdV2(@PathVariable(value = "id") Long id) {
         PostDto postDto = postService.getPostById(id);
         PostDtoV2 postDtoV2 = new PostDtoV2();
         postDtoV2.setId(postDto.getId());
@@ -59,24 +59,22 @@ public class PostController {
         tags.add("AWS");
         postDtoV2.setTags(tags);
 
-        return ResponseEntity.ok(postDtoV2);
+        return postDtoV2;
     }
 
     @PutMapping("/v1/posts/{id}")
-    public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(value = "id") Long id) {
-        PostDto postResponse = postService.updatePost(postDto, id);
-        return new ResponseEntity<>(postResponse, HttpStatus.OK);
+    public PostDto updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(value = "id") Long id) {
+        return postService.updatePost(postDto, id);
     }
 
     @DeleteMapping("/v1/posts/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable(value = "id") Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(@PathVariable(value = "id") Long id) {
         postService.deletePostById(id);
-        return new ResponseEntity<>("Post entity deleted successfully.", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/v1/posts/category/{id}")
-    public ResponseEntity<List<PostDto>> getPostsByCategory(@PathVariable("id") Long categoryId) {
-        List<PostDto> postDtos = postService.getPostsByCategory(categoryId);
-        return ResponseEntity.ok(postDtos);
+    public List<PostDto> getPostsByCategory(@PathVariable("id") Long categoryId) {
+        return postService.getPostsByCategory(categoryId);
     }
 }
