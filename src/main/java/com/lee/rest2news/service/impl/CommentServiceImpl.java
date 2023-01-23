@@ -49,18 +49,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto getCommentById(Long postId, Long commentId) {
-        Post post = getPostById(postId);
-        Comment comment = getCommentById(commentId);
-        checkCommentBelongsToPost(post, comment);
+        Comment comment = getVerifiedComment(postId, commentId);
 
         return mapToDto(comment);
     }
 
     @Override
     public CommentDto updateComment(Long postId, Long commentId, CommentDto commentRequest) {
-        Post post = getPostById(postId);
-        Comment comment = getCommentById(commentId);
-        checkCommentBelongsToPost(post, comment);
+        Comment comment = getVerifiedComment(postId, commentId);
 
         comment.setUserName(commentRequest.getUserName());
         comment.setEmail(commentRequest.getEmail());
@@ -72,9 +68,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void deleteComment(Long postId, Long commentId) {
-        Post post = getPostById(postId);
-        Comment comment = getCommentById(commentId);
-        checkCommentBelongsToPost(post, comment);
+        Comment comment = getVerifiedComment(postId, commentId);
 
         commentRepository.delete(comment);
     }
@@ -92,14 +86,13 @@ public class CommentServiceImpl implements CommentService {
                 () -> new ResourceNotFoundException(POST, ID, postId));
     }
 
-    private Comment getCommentById(Long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(
+    private Comment getVerifiedComment(Long postId, Long commentId) {
+        Post post = getPostById(postId);
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ResourceNotFoundException(COMMENT, ID, commentId));
-    }
-
-    private static void checkCommentBelongsToPost(Post post, Comment comment) {
         if (!comment.getPost().getId().equals(post.getId())) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Comment doesn't belong to post");
         }
+        return comment;
     }
 }
