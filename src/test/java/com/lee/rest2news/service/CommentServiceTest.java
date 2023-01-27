@@ -2,6 +2,7 @@ package com.lee.rest2news.service;
 
 import com.lee.rest2news.entity.Comment;
 import com.lee.rest2news.entity.Post;
+import com.lee.rest2news.exception.ApiException;
 import com.lee.rest2news.exception.ResourceNotFoundException;
 import com.lee.rest2news.payload.CommentDto;
 import com.lee.rest2news.repository.CommentRepository;
@@ -107,6 +108,22 @@ public class CommentServiceTest {
 
         // then
         assertEquals(String.format("Comment not found with id : '%s'", TEST_ID_1), exception.getMessage());
+    }
+
+    @Test
+    public void getCommentById_CommentNotVerified_Test(@Mock Post post1, @Mock Post post2, @Mock Comment comment) {
+        // given
+        when(postRepository.findById(TEST_ID_1)).thenReturn(Optional.of(post1));
+
+        when(commentRepository.findById(TEST_ID_1)).thenReturn(Optional.of(comment));
+        when(comment.getPost()).thenReturn(post2);
+        when(comment.getPost().getId()).thenReturn(TEST_ID_2);
+        // when
+        ApiException exception = assertThrows(ApiException.class,
+                () -> commentService.getCommentById(TEST_ID_1, TEST_ID_1));
+
+        // then
+        assertEquals("Comment doesn't belong to post", exception.getMessage());
     }
 
     @Test
