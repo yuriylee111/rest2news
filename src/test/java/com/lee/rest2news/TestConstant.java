@@ -31,6 +31,9 @@ public class TestConstant {
     public static final String TEST_TEXT_BODY_UPDATED = "test text body updated";
 
     public static final String TEST_CATEGORY_NAME = "test category name";
+    public static final String TEST_CATEGORY_NAME_UPDATED = "test category name updated";
+    public static final String TEST_CATEGORY_DESCRIPTION = "test category description";
+    public static final String TEST_CATEGORY_DESCRIPTION_UPDATED = "test category description updated";
 
     public static final int TEST_PAGE_NUMBER = 0;
     public static final int TEST_PAGE_SIZE = 5;

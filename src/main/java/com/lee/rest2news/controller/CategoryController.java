@@ -3,7 +3,6 @@ package com.lee.rest2news.controller;
 import com.lee.rest2news.payload.CategoryDto;
 import com.lee.rest2news.service.CategoryService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,32 +18,31 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto categoryDto) {
-        CategoryDto savedCategory = categoryService.addCategory(categoryDto);
-        return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public CategoryDto addCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryService.addCategory(categoryDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryDto> getCategory(@PathVariable("id") Long categoryId) {
-        CategoryDto categoryDto = categoryService.getCategory(categoryId);
-        return ResponseEntity.ok(categoryDto);
+    public CategoryDto getCategoryById(@PathVariable("id") Long categoryId) {
+        return categoryService.getCategory(categoryId);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryDto>> getCategories() {
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public List<CategoryDto> getCategories() {
+        return categoryService.getAllCategories();
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,
-                                                      @PathVariable("id") Long categoryId) {
-        return ResponseEntity.ok(categoryService.updateCategory(categoryDto, categoryId));
+    public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto,
+                                      @PathVariable("id") Long categoryId) {
+        return categoryService.updateCategory(categoryDto, categoryId);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable("id") Long categoryId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCategory(@PathVariable("id") Long categoryId) {
         categoryService.deleteCategory(categoryId);
-        return new ResponseEntity<>("Category deleted successfully!", HttpStatus.NO_CONTENT);
     }
 
 }
